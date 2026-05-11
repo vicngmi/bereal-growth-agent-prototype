@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { experimentBacklog, kpis, segments, type Kpi } from "../lib/data";
-import { runAgent } from "../lib/agent";
+import { runAgent, type AgentResponse } from "../lib/agent";
 
 function formatKpi(kpi: Kpi) {
   if (kpi.format === "percent") return `${(kpi.current * 100).toFixed(1)}%`;
@@ -23,14 +23,30 @@ function signalClass(signal: string) {
 }
 
 export default function Page() {
-  const [question, setQuestion] = useState("Where should we scale acquisition next?");
-  const answer = useMemo(() => runAgent(question), [question]);
+  const defaultQuestion = "Where should we scale acquisition next?";
+  const [question, setQuestion] = useState(defaultQuestion);
+  const [lastRunQuestion, setLastRunQuestion] = useState(defaultQuestion);
+  const [answer, setAnswer] = useState<AgentResponse>(runAgent(defaultQuestion));
+  const [isRunning, setIsRunning] = useState(false);
+  const [runCount, setRunCount] = useState(1);
   const prompts = [
     "Where should we scale acquisition next?",
     "Why is Android weaker?",
     "What is blocking D7 retention?",
     "What should we test next?"
   ];
+
+  const runCycle = () => {
+    const q = question.trim() || defaultQuestion;
+    setQuestion(q);
+    setIsRunning(true);
+    window.setTimeout(() => {
+      setAnswer(runAgent(q));
+      setLastRunQuestion(q);
+      setRunCount((n) => n + 1);
+      setIsRunning(false);
+    }, 550);
+  };
 
   return (
     <main className="container">
@@ -39,8 +55,13 @@ export default function Page() {
           <div className="eyebrow">Candidate prototype / illustrative data only</div>
           <h1>BeReal Growth Agent</h1>
           <p className="lede">
-            A lightweight operating layer on top of the dashboard: read loop health, network quality, and acquisition quality, then turn signal into one weekly decision.
+            An operating layer for weekly growth decisions, built from first principles.
           </p>
+          <div className="principles">
+            <span>1. Observe</span>
+            <span>2. Decide</span>
+            <span>3. Act</span>
+          </div>
           <div className="note">
             Sample data only. This is not connected to BeReal systems. It is a deterministic front-end prototype based on the same dashboard logic as the Excel workbook.
           </div>
@@ -53,18 +74,24 @@ export default function Page() {
           </div>
           <div className="input-row">
             <input value={question} onChange={(event) => setQuestion(event.target.value)} aria-label="Question for growth agent" />
-            <button onClick={() => setQuestion(question.trim() || prompts[0])}>Run</button>
+            <button onClick={runCycle} disabled={isRunning}>{isRunning ? "Running..." : "Run"}</button>
           </div>
           <div className="chips">
             {prompts.map((prompt) => <button className="chip" key={prompt} onClick={() => setQuestion(prompt)}>{prompt}</button>)}
           </div>
           <div className="answer">
-            <div className="eyebrow">Recommendation</div>
+            <div className="eyebrow">Decision output</div>
+            <p className="last-run">Last run: {lastRunQuestion} · Run #{runCount}</p>
             <h2>{answer.headline}</h2>
             <p>{answer.diagnosis}</p>
             <ul>{answer.evidence.map((item) => <li key={item}>{item}</li>)}</ul>
             <p><strong>Next move:</strong> {answer.recommendation}</p>
             <p><strong>Experiment:</strong> {answer.experiment} · <strong>Confidence:</strong> {answer.confidence}</p>
+            <div className="decision-metrics">
+              <div><span>Watch metric</span><strong>{answer.watchMetric}</strong></div>
+              <div><span>Success threshold</span><strong>{answer.successThreshold}</strong></div>
+              <div><span>Readout window</span><strong>{answer.readoutWindow}</strong></div>
+            </div>
           </div>
         </div>
       </section>

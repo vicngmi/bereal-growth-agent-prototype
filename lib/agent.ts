@@ -6,6 +6,9 @@ export type AgentResponse = {
   evidence: string[];
   recommendation: string;
   experiment: string;
+  watchMetric: string;
+  successThreshold: string;
+  readoutWindow: string;
   confidence: "High" | "Medium" | "Low";
 };
 
@@ -36,6 +39,9 @@ export function runAgent(question: string): AgentResponse {
       ],
       recommendation: "Increase budget gradually, add a referral mechanic inside the same real-world communities, and monitor whether active-friend density remains stable as spend grows.",
       experiment: experimentBacklog[2].title,
+      watchMetric: "D7 retained users per $",
+      successThreshold: "+12% retained users per $ with stable CAC",
+      readoutWindow: "14 days",
       confidence: "High"
     };
   }
@@ -52,6 +58,9 @@ export function runAgent(question: string): AgentResponse {
       ],
       recommendation: "Pause broad Android scaling, simplify contact import, and seed local connectors in the affected communities.",
       experiment: experimentBacklog[0].title,
+      watchMetric: "% with >=3 active friends",
+      successThreshold: "+5pp in target cohorts with flat uninstall rate",
+      readoutWindow: "10 days",
       confidence: "Medium"
     };
   }
@@ -67,6 +76,9 @@ export function runAgent(question: string): AgentResponse {
       ],
       recommendation: "Treat retention as a graph problem: seed clusters, track active friends, then improve prompts after density exists.",
       experiment: experimentBacklog[0].title,
+      watchMetric: "D7 retention",
+      successThreshold: "+3pp D7 without uninstall increase",
+      readoutWindow: "14 days",
       confidence: "High"
     };
   }
@@ -81,6 +93,9 @@ export function runAgent(question: string): AgentResponse {
     ],
     recommendation: "Scale the best communities while fixing sparse cohorts with friend suggestions, connector seeding, and community-specific first post prompts.",
     experiment: experimentBacklog[1].title,
+    watchMetric: "First post rate",
+    successThreshold: "+5pp first-post rate in low-performing cohorts",
+    readoutWindow: "7 days",
     confidence: "High"
   };
 }

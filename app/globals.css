@@ -32,17 +32,25 @@ h1 { margin: 10px 0 14px; font-size: clamp(34px, 6vw, 64px); letter-spacing: -.0
 p { line-height: 1.55; }
 .lede { color: var(--muted); max-width: 760px; font-size: 17px; }
 .note { margin-top: 18px; padding: 12px 14px; border-radius: 16px; background: var(--soft); color: #4a4945; font-size: 14px; }
+.principles { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.principles span { background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 7px 10px; font-size: 12px; font-weight: 700; color: #3f3a33; }
 .agent { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
 .agent-title { font-weight: 800; font-size: 20px; }
 .input-row { display: flex; gap: 8px; }
 input { width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 12px 13px; background: #fff; }
 button { border: 0; border-radius: 14px; padding: 12px 14px; background: var(--accent); color: #fff; cursor: pointer; font-weight: 700; }
 button:hover { filter: brightness(1.03); }
+button:disabled { opacity: .7; cursor: default; }
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .chip { background: #fff; color: #222; border: 1px solid var(--line); padding: 9px 11px; font-size: 13px; }
 .answer { border-top: 1px solid var(--line); padding-top: 14px; }
+.last-run { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
 .answer h2 { margin: 0 0 8px; font-size: 22px; letter-spacing: -.02em; }
 .answer ul { margin: 8px 0 0 18px; padding: 0; color: var(--muted); }
+.decision-metrics { margin-top: 12px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.decision-metrics div { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fff; }
+.decision-metrics span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+.decision-metrics strong { font-size: 13px; line-height: 1.35; }
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 18px 0; }
 .kpi { padding: 18px; }
 .kpi .label { color: var(--muted); font-size: 13px; }
@@ -58,4 +66,8 @@ table { width: 100%; border-collapse: collapse; min-width: 780px; }
 th, td { padding: 13px 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
 th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
 .footer { margin-top: 22px; color: var(--muted); font-size: 13px; }
-@media (max-width: 850px) { .hero { grid-template-columns: 1fr; } .grid { grid-template-columns: 1fr; } }
+@media (max-width: 850px) {
+  .hero { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: 1fr; }
+  .decision-metrics { grid-template-columns: 1fr; }
+}
