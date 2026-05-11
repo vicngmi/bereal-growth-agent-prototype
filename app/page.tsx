@@ -22,37 +22,22 @@ function signalClass(signal: string) {
 }
 
 export default function Page() {
-  const scenarios = [
-    {
-      id: "friends",
-      label: "Low 3+ active friends",
-      signal: "% users with 3+ active friends drops below target",
-      diagnosis: "New users are not entering dense enough social graphs.",
-      action: "Run onboarding + connector seeding experiment in weak cohorts.",
-      metric: "% users with 3+ active friends",
-      success: "+5pp without uninstall increase"
-    },
-    {
-      id: "cluster",
-      label: "Dense cluster, posting down",
-      signal: "Cluster density is high but posting per day drops",
-      diagnosis: "Network exists, but participation habit is weakening.",
-      action: "Run contextual prompt/theme experiment and investigate local behavior.",
-      metric: "% posting per day",
-      success: "+4pp posting rate in 2 weeks"
-    },
-    {
-      id: "ua",
-      label: "Cheap installs, weak D7",
-      signal: "CPI looks efficient but D7 retention is weak",
-      diagnosis: "Acquisition is bringing isolated or low-intent users.",
-      action: "Pause scale in weak sources; retarget to real-world clusters.",
-      metric: "D7 retention by source",
-      success: "D7 above threshold before budget increase"
-    }
+  const sheetRows = [
+    { layer: "Core Loop Health", metric: "% posting per day", current: "23.7%", target: "24.0%", status: "Watch", decision: "If 2+ loop metrics are below target for 2 weeks, pause scaling and fix loop first." },
+    { layer: "Core Loop Health", metric: "Notification->Post CR", current: "38.0%", target: "37.0%", status: "Good", decision: "Healthy. Keep monitoring by platform and cohort." },
+    { layer: "Core Loop Health", metric: "Avg interactions per post", current: "3.1", target: "2.8", status: "Good", decision: "Healthy. Continue loop quality experiments." },
+    { layer: "Core Loop Health", metric: "Extended loop completion", current: "30.8%", target: "29.0%", status: "Good", decision: "Watch for abrupt cohort-level declines." },
+    { layer: "Network Quality", metric: "Avg active connections / user", current: "3.68", target: "4.0", status: "Watch", decision: "Increase dense-cluster seeding before paid expansion." },
+    { layer: "Network Quality", metric: "% users with 3-5 active friends", current: "50.8%", target: "55.0%", status: "Watch", decision: "Trigger onboarding + connector seeding experiments." },
+    { layer: "Network Quality", metric: "Retention by friend count", current: "0-2 << 3+", target: "Gap narrows", status: "Fix", decision: "Priority: close D7 gap between 0-2 and 3+ friend cohorts." },
+    { layer: "Network Quality", metric: "Cluster density", current: "Mixed", target: "Stable/Up", status: "Watch", decision: "If density stays high but posting falls, investigate local behavior." },
+    { layer: "Acquisition Quality", metric: "Activation rate (add friends + post)", current: "47.0%", target: "45.0%", status: "Good", decision: "Scale only sources where post-activation quality stays strong." },
+    { layer: "Acquisition Quality", metric: "Time to activation", current: "18-31h", target: "<24h", status: "Watch", decision: "Reduce activation time in weak cohorts before scaling spend." },
+    { layer: "Acquisition Quality", metric: "Retention by source", current: "Divergent", target: "Converging up", status: "Watch", decision: "Cut low-quality sources even if CPI looks efficient." },
+    { layer: "Acquisition Quality", metric: "% entering meaningful context", current: "34-62%", target: ">50%", status: "Fix", decision: "Retarget to real-world clusters and context-first invites." }
   ];
-  const [selectedId, setSelectedId] = useState(scenarios[0].id);
-  const selected = scenarios.find((s) => s.id === selectedId) || scenarios[0];
+  const [selectedRowIndex, setSelectedRowIndex] = useState(0);
+  const selectedRow = sheetRows[selectedRowIndex];
 
   const coreLoop = kpis.slice(0, 3);
   const network = kpis.slice(3, 5);
@@ -155,27 +140,38 @@ export default function Page() {
         </table>
       </div>
 
-      <h2 className="section-title">Agent Simulator</h2>
+      <h2 className="section-title">Interactive Sheet View</h2>
       <div className="card agent">
-        <div className="eyebrow">Interactive example</div>
-        <div className="chips">
-          {scenarios.map((scenario) => (
-            <button
-              className="chip"
-              key={scenario.id}
-              onClick={() => setSelectedId(scenario.id)}
-            >
-              {scenario.label}
-            </button>
-          ))}
+        <div className="eyebrow">Click a row to simulate agent selection</div>
+        <div className="table-wrap">
+          <table className="sheet-grid">
+            <thead>
+              <tr>
+                <th>Layer</th><th>Metric</th><th>Current</th><th>Target</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sheetRows.map((row, index) => (
+                <tr
+                  key={`${row.layer}-${row.metric}`}
+                  className={index === selectedRowIndex ? "row-selected" : ""}
+                  onClick={() => setSelectedRowIndex(index)}
+                >
+                  <td>{row.layer}</td>
+                  <td>{row.metric}</td>
+                  <td>{row.current}</td>
+                  <td>{row.target}</td>
+                  <td>{row.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
         <div className="answer">
-          <h2>{selected.label}</h2>
-          <p><strong>Signal:</strong> {selected.signal}</p>
-          <p><strong>Diagnosis:</strong> {selected.diagnosis}</p>
-          <p><strong>Action:</strong> {selected.action}</p>
-          <p><strong>Watch metric:</strong> {selected.metric}</p>
-          <p><strong>Success rule:</strong> {selected.success}</p>
+          <h2>Selected Range: Row {selectedRowIndex + 1}</h2>
+          <p><strong>Layer:</strong> {selectedRow.layer}</p>
+          <p><strong>Metric:</strong> {selectedRow.metric}</p>
+          <p><strong>Decision logic:</strong> {selectedRow.decision}</p>
         </div>
       </div>
 
