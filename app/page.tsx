@@ -137,7 +137,7 @@ export default function Page() {
           </thead>
           <tbody>
             <tr>
-              <td>% users with 3+ active friends drops</td>
+              <td>Users with fewer than 3 active friends show lower retention</td>
               <td>Weak network formation</td>
               <td>Run onboarding + connector seeding experiment</td>
             </tr>
