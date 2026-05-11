@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { experimentBacklog, kpis, segments, type Kpi } from "../lib/data";
+import { kpis, segments, type Kpi } from "../lib/data";
 import { runAgent, type AgentResponse } from "../lib/agent";
 
 function formatKpi(kpi: Kpi) {
@@ -55,7 +55,7 @@ export default function Page() {
           <div className="eyebrow">Candidate prototype / illustrative data only</div>
           <h1>BeReal Growth Agent</h1>
           <p className="lede">
-            An operating layer for weekly growth decisions, built from first principles.
+            A simple operating dashboard based on three layers: core loop health, network quality, and acquisition quality.
           </p>
           <div className="principles">
             <span>1. Observe</span>
@@ -134,21 +134,27 @@ export default function Page() {
         </table>
       </div>
 
-      <h2 className="section-title">Experiment backlog</h2>
+      <h2 className="section-title">Simple funnel view</h2>
       <section className="grid">
-        {experimentBacklog.map((experiment) => (
-          <div className="card kpi" key={experiment.title}>
-            <div className="label">{experiment.segment}</div>
-            <h3>{experiment.title}</h3>
-            <p><strong>Trigger:</strong> {experiment.trigger}</p>
-            <p><strong>Metric:</strong> {experiment.primaryMetric}</p>
-            <p><strong>Decision rule:</strong> {experiment.decisionRule}</p>
-          </div>
-        ))}
+        <div className="card kpi">
+          <div className="label">Step 1</div>
+          <h3>Install to add friends</h3>
+          <p>Check whether users quickly build a meaningful graph.</p>
+        </div>
+        <div className="card kpi">
+          <div className="label">Step 2</div>
+          <h3>Add friends to first post to D1</h3>
+          <p>Check where participation breaks in the loop.</p>
+        </div>
+        <div className="card kpi">
+          <div className="label">Step 3</div>
+          <h3>D1 to D7 retention</h3>
+          <p>Check if users form habit once network density exists.</p>
+        </div>
       </section>
 
       <div className="footer">
-        Built as a Vercel-ready mock prototype. Data is illustrative and mirrors the Excel workbook logic: loop health to network density to acquisition quality to experiment decision.
+        Sample data only. This mirrors the case-study logic: are users participating, are they connected to the right people, and are we acquiring more users like them.
       </div>
     </main>
   );
