@@ -1,0 +1,17 @@
+{
+  "data_status": "Illustrative sample data only. Not BeReal internal data.",
+  "core_loop": {
+    "activation_rate": 0.47,
+    "first_post_rate": 0.764,
+    "d7_retention": 0.237,
+    "avg_active_friends": 3.68,
+    "users_with_3_active_friends": 0.508,
+    "paid_equivalent_cac": 2.42
+  },
+  "agent_logic": [
+    "Detect whether core loop is broken",
+    "Check whether the user has a dense active friend graph",
+    "Judge acquisition by retained, connected users rather than install volume",
+    "Recommend a next experiment with a ship/kill rule"
+  ]
+}
