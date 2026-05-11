@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { kpis, type Kpi } from "../lib/data";
 
 function formatKpi(kpi: Kpi) {
@@ -21,6 +22,38 @@ function signalClass(signal: string) {
 }
 
 export default function Page() {
+  const scenarios = [
+    {
+      id: "friends",
+      label: "Low 3+ active friends",
+      signal: "% users with 3+ active friends drops below target",
+      diagnosis: "New users are not entering dense enough social graphs.",
+      action: "Run onboarding + connector seeding experiment in weak cohorts.",
+      metric: "% users with 3+ active friends",
+      success: "+5pp without uninstall increase"
+    },
+    {
+      id: "cluster",
+      label: "Dense cluster, posting down",
+      signal: "Cluster density is high but posting per day drops",
+      diagnosis: "Network exists, but participation habit is weakening.",
+      action: "Run contextual prompt/theme experiment and investigate local behavior.",
+      metric: "% posting per day",
+      success: "+4pp posting rate in 2 weeks"
+    },
+    {
+      id: "ua",
+      label: "Cheap installs, weak D7",
+      signal: "CPI looks efficient but D7 retention is weak",
+      diagnosis: "Acquisition is bringing isolated or low-intent users.",
+      action: "Pause scale in weak sources; retarget to real-world clusters.",
+      metric: "D7 retention by source",
+      success: "D7 above threshold before budget increase"
+    }
+  ];
+  const [selectedId, setSelectedId] = useState(scenarios[0].id);
+  const selected = scenarios.find((s) => s.id === selectedId) || scenarios[0];
+
   const coreLoop = kpis.slice(0, 3);
   const network = kpis.slice(3, 5);
   const acquisition = kpis.slice(5, 6);
@@ -120,6 +153,30 @@ export default function Page() {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <h2 className="section-title">Agent Simulator</h2>
+      <div className="card agent">
+        <div className="eyebrow">Interactive example</div>
+        <div className="chips">
+          {scenarios.map((scenario) => (
+            <button
+              className="chip"
+              key={scenario.id}
+              onClick={() => setSelectedId(scenario.id)}
+            >
+              {scenario.label}
+            </button>
+          ))}
+        </div>
+        <div className="answer">
+          <h2>{selected.label}</h2>
+          <p><strong>Signal:</strong> {selected.signal}</p>
+          <p><strong>Diagnosis:</strong> {selected.diagnosis}</p>
+          <p><strong>Action:</strong> {selected.action}</p>
+          <p><strong>Watch metric:</strong> {selected.metric}</p>
+          <p><strong>Success rule:</strong> {selected.success}</p>
+        </div>
       </div>
 
       <div className="footer">
