@@ -117,7 +117,7 @@ export default function Page() {
       <section className="hero ceo-hero">
         <div className="card hero-copy">
           <div className="eyebrow">BeReal Growth Command Center (Sample Data)</div>
-          <h1>What A CEO Needs In 60 Seconds</h1>
+          <h1>Growth Dashboard</h1>
           <p className="lede">
             Core loop health. Network quality. Acquisition quality. One page, one weekly decision.
           </p>
