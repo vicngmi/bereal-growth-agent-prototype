@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { kpis, segments, type Kpi } from "../lib/data";
-import { runAgent, type AgentResponse } from "../lib/agent";
 
 function formatKpi(kpi: Kpi) {
   if (kpi.format === "percent") return `${(kpi.current * 100).toFixed(1)}%`;
@@ -23,82 +21,33 @@ function signalClass(signal: string) {
 }
 
 export default function Page() {
-  const defaultQuestion = "Where should we scale acquisition next?";
-  const [question, setQuestion] = useState(defaultQuestion);
-  const [lastRunQuestion, setLastRunQuestion] = useState(defaultQuestion);
-  const [answer, setAnswer] = useState<AgentResponse>(runAgent(defaultQuestion));
-  const [isRunning, setIsRunning] = useState(false);
-  const [runCount, setRunCount] = useState(1);
-  const prompts = [
-    "Where should we scale acquisition next?",
-    "Why is Android weaker?",
-    "What is blocking D7 retention?",
-    "What should we test next?"
-  ];
-
-  const runCycle = () => {
-    const q = question.trim() || defaultQuestion;
-    setQuestion(q);
-    setIsRunning(true);
-    window.setTimeout(() => {
-      setAnswer(runAgent(q));
-      setLastRunQuestion(q);
-      setRunCount((n) => n + 1);
-      setIsRunning(false);
-    }, 550);
-  };
+  const coreLoop = kpis.slice(0, 3);
+  const network = kpis.slice(3, 5);
+  const acquisition = kpis.slice(5, 6);
 
   return (
     <main className="container">
       <section className="hero">
         <div className="card hero-copy">
           <div className="eyebrow">Candidate prototype / illustrative data only</div>
-          <h1>BeReal Growth Agent</h1>
+          <h1>BeReal Growth Dashboard</h1>
           <p className="lede">
-            A simple operating dashboard based on three layers: core loop health, network quality, and acquisition quality.
+            Built around three layers only: core loop health, network quality, and acquisition quality.
           </p>
           <div className="principles">
-            <span>1. Observe</span>
-            <span>2. Decide</span>
-            <span>3. Act</span>
+            <span>Are users participating?</span>
+            <span>Are they connected to the right people?</span>
+            <span>Are we acquiring more users like them?</span>
           </div>
           <div className="note">
-            Sample data only. This is not connected to BeReal systems. It is a deterministic front-end prototype based on the same dashboard logic as the Excel workbook.
-          </div>
-        </div>
-
-        <div className="card agent">
-          <div>
-            <div className="eyebrow">Agent prompt</div>
-            <div className="agent-title">Ask the dashboard what to do next</div>
-          </div>
-          <div className="input-row">
-            <input value={question} onChange={(event) => setQuestion(event.target.value)} aria-label="Question for growth agent" />
-            <button onClick={runCycle} disabled={isRunning}>{isRunning ? "Running..." : "Run"}</button>
-          </div>
-          <div className="chips">
-            {prompts.map((prompt) => <button className="chip" key={prompt} onClick={() => setQuestion(prompt)}>{prompt}</button>)}
-          </div>
-          <div className="answer">
-            <div className="eyebrow">Decision output</div>
-            <p className="last-run">Last run: {lastRunQuestion} · Run #{runCount}</p>
-            <h2>{answer.headline}</h2>
-            <p>{answer.diagnosis}</p>
-            <ul>{answer.evidence.map((item) => <li key={item}>{item}</li>)}</ul>
-            <p><strong>Next move:</strong> {answer.recommendation}</p>
-            <p><strong>Experiment:</strong> {answer.experiment} · <strong>Confidence:</strong> {answer.confidence}</p>
-            <div className="decision-metrics">
-              <div><span>Watch metric</span><strong>{answer.watchMetric}</strong></div>
-              <div><span>Success threshold</span><strong>{answer.successThreshold}</strong></div>
-              <div><span>Readout window</span><strong>{answer.readoutWindow}</strong></div>
-            </div>
+            Sample data only. This is not connected to BeReal systems.
           </div>
         </div>
       </section>
 
-      <h2 className="section-title">Executive dashboard snapshot</h2>
+      <h2 className="section-title">Core Loop Health</h2>
       <section className="grid">
-        {kpis.map((kpi) => (
+        {coreLoop.map((kpi) => (
           <div className="card kpi" key={kpi.label}>
             <div className="label">{kpi.label}</div>
             <div className="value">{formatKpi(kpi)}</div>
@@ -109,52 +58,72 @@ export default function Page() {
         ))}
       </section>
 
-      <h2 className="section-title">Segments the agent is reading</h2>
+      <h2 className="section-title">Network Quality</h2>
+      <section className="grid">
+        {network.map((kpi) => (
+          <div className="card kpi" key={kpi.label}>
+            <div className="label">{kpi.label}</div>
+            <div className="value">{formatKpi(kpi)}</div>
+            <div className="target">Target: {formatTarget(kpi)}</div>
+            <span className={signalClass(kpi.signal)}>{kpi.signal}</span>
+            <p>{kpi.interpretation}</p>
+          </div>
+        ))}
+        <div className="card kpi">
+          <div className="label">Retention by friend count</div>
+          <h3>0-2 friends vs 3+ friends</h3>
+          <p>Use this split as the main retention diagnostic for network density.</p>
+        </div>
+      </section>
+
+      <h2 className="section-title">Acquisition Quality + Funnel</h2>
+      <section className="grid">
+        {acquisition.map((kpi) => (
+          <div className="card kpi" key={kpi.label}>
+            <div className="label">{kpi.label}</div>
+            <div className="value">{formatKpi(kpi)}</div>
+            <div className="target">Target: {formatTarget(kpi)}</div>
+            <span className={signalClass(kpi.signal)}>{kpi.signal}</span>
+            <p>{kpi.interpretation}</p>
+          </div>
+        ))}
+        <div className="card kpi">
+          <div className="label">Simple funnel</div>
+          <p><strong>Install -> Add friends -> First post -> D1 -> D7</strong></p>
+          <p>Scale only the sources where users reach D7 with meaningful network context.</p>
+        </div>
+      </section>
+
+      <h2 className="section-title">System Actions</h2>
       <div className="card table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Segment</th><th>Platform</th><th>Installs</th><th>Activation</th><th>D7</th><th>Active friends</th><th>Paid-equivalent CAC</th><th>Quality</th>
+              <th>Signal</th><th>Likely issue</th><th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {segments.map((segment) => (
-              <tr key={segment.name}>
-                <td>{segment.name}</td>
-                <td>{segment.platform}</td>
-                <td>{segment.installs.toLocaleString()}</td>
-                <td>{(segment.activation * 100).toFixed(1)}%</td>
-                <td>{(segment.d7 * 100).toFixed(1)}%</td>
-                <td>{segment.activeFriends.toFixed(1)}</td>
-                <td>${segment.paidEquivalentCac.toFixed(2)}</td>
-                <td>{segment.qualityScore.toFixed(1)}</td>
-              </tr>
-            ))}
+            <tr>
+              <td>% users with 3+ active friends drops</td>
+              <td>Weak network formation</td>
+              <td>Run onboarding + connector seeding experiment</td>
+            </tr>
+            <tr>
+              <td>Cluster density high but posting drops</td>
+              <td>Habit/context mismatch</td>
+              <td>Investigate local behavior and test contextual prompts</td>
+            </tr>
+            <tr>
+              <td>Cheap installs but weak D7</td>
+              <td>Low acquisition quality</td>
+              <td>Pause scale, fix activation path, then retest</td>
+            </tr>
           </tbody>
         </table>
       </div>
 
-      <h2 className="section-title">Simple funnel view</h2>
-      <section className="grid">
-        <div className="card kpi">
-          <div className="label">Step 1</div>
-          <h3>Install to add friends</h3>
-          <p>Check whether users quickly build a meaningful graph.</p>
-        </div>
-        <div className="card kpi">
-          <div className="label">Step 2</div>
-          <h3>Add friends to first post to D1</h3>
-          <p>Check where participation breaks in the loop.</p>
-        </div>
-        <div className="card kpi">
-          <div className="label">Step 3</div>
-          <h3>D1 to D7 retention</h3>
-          <p>Check if users form habit once network density exists.</p>
-        </div>
-      </section>
-
       <div className="footer">
-        Sample data only. This mirrors the case-study logic: are users participating, are they connected to the right people, and are we acquiring more users like them.
+        This web version mirrors the Excel structure exactly: Executive summary, Core Loop Health, Network Quality, Acquisition + Funnel, and System Actions.
       </div>
     </main>
   );
