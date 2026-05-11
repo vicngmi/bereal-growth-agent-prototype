@@ -89,7 +89,7 @@ export default function Page() {
         ))}
         <div className="card kpi">
           <div className="label">Simple funnel</div>
-          <p><strong>Install -> Add friends -> First post -> D1 -> D7</strong></p>
+          <p><strong>Install to add friends to first post to D1 to D7</strong></p>
           <p>Scale only the sources where users reach D7 with meaningful network context.</p>
         </div>
       </section>
