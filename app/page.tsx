@@ -1,6 +1,6 @@
 "use client";
 
-import { kpis, segments, type Kpi } from "../lib/data";
+import { kpis, type Kpi } from "../lib/data";
 
 function formatKpi(kpi: Kpi) {
   if (kpi.format === "percent") return `${(kpi.current * 100).toFixed(1)}%`;
